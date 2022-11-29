@@ -1,1 +1,3 @@
 venv
+.hypothesis/
+__pycache__/
