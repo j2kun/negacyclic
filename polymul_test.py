@@ -1,9 +1,12 @@
 from hypothesis import given
 from hypothesis.strategies import integers
 from hypothesis.strategies import lists
+from hypothesis.strategies import sampled_from
 import numpy as np
 
 from polymul import cyclic_polymul
+from polymul import negacyclic_polymul
+from polymul import tangent_fft_negacyclic_polymul
 
 
 def _np_polymul_mod(poly1, poly2, poly_mod):
@@ -46,6 +49,27 @@ N = 16
     lists(integers(min_value=-100, max_value=100), min_size=N, max_size=N),
 )
 def test_cyclic_polymul(p1, p2):
+    p1 = np.array(p1)
+    p2 = np.array(p2)
     expected = _np_cyclic_polymul(p1, p2)
     actual = cyclic_polymul(p1, p2, len(p1))
+    np.testing.assert_array_equal(expected, actual)
+
+
+NEGACYCLIC_IMPLS = [
+    negacyclic_polymul,
+    tangent_fft_negacyclic_polymul,
+]
+
+
+@given(
+    lists(integers(min_value=-100, max_value=100), min_size=N, max_size=N),
+    lists(integers(min_value=-100, max_value=100), min_size=N, max_size=N),
+    sampled_from(NEGACYCLIC_IMPLS),
+)
+def test_negacyclic_polymul(p1, p2, impl):
+    p1 = np.array(p1)
+    p2 = np.array(p2)
+    expected = _np_negacyclic_polymul(p1, p2)
+    actual = impl(p1, p2)
     np.testing.assert_array_equal(expected, actual)
