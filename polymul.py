@@ -15,10 +15,31 @@ def cyclic_polymul(p1, p2, N):
     return numpy.round(numpy.real(inverted)).astype(p1.dtype)
 
 
-def negacyclic_polymul(p1, p2):
-    """Multiply two polynomials modulo (x^N - 1).
+def negacyclic_polymul_preimage_and_map_back(p1, p2):
+    """Multiply two polynomials modulo (x^N + 1).
 
     p1 and p2 are arrays of coefficients in degree-increasing order.
+
+    This is the technique that maps the polynomials to a larger ring
+    R[x]/(x^2N - 1), but does not take advantage of the extra structure in the
+    preimage ring, and instead maps it back down to the smaller ring manually.
+    """
+    p1_preprocessed = numpy.concatenate([p1, -p1])
+    p2_preprocessed = numpy.concatenate([p2, -p2])
+    product = fft(p1_preprocessed) * fft(p2_preprocessed)
+    inverted = ifft(product)
+    rounded = numpy.round(numpy.real(inverted)).astype(p1.dtype)
+    return (rounded[: p1.shape[0]] - rounded[p1.shape[0] :]) // 4
+
+
+def negacyclic_polymul_use_special_preimage(p1, p2):
+    """Multiply two polynomials modulo (x^N + 1).
+
+    p1 and p2 are arrays of coefficients in degree-increasing order.
+
+    This is the technique that maps the polynomials to a larger ring
+    R[x]/(x^2N - 1), and uses the extra structure in the preimage ring to avoid
+    having to manually map it back to the smaller ring.
     """
     p1_preprocessed = numpy.concatenate([p1, -p1])
     p2_preprocessed = numpy.concatenate([p2, -p2])
