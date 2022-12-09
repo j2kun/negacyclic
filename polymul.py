@@ -55,7 +55,7 @@ def primitive_nth_root(n):
 
 
 def negacyclic_polymul_complex_twist(p1, p2):
-    """Computes a poly multiplication mod (X^N + 1) where N = len(a).
+    """Computes a poly multiplication mod (X^N + 1) where N = len(p1).
 
     Uses the idea on page 332 (pdf page 8) of "Fast multiplication and its
     applications" by Daniel Bernstein.
@@ -77,3 +77,36 @@ def negacyclic_polymul_complex_twist(p1, p2):
     return numpy.round(
         numpy.concatenate([numpy.real(ifft_rotated), numpy.imag(ifft_rotated)])
     ).astype(p1.dtype)
+
+
+def cylic_matrix(c: numpy.array) -> numpy.ndarray:
+    """Generates a cyclic matrix with each row of the input shifted.
+
+    For input: [1, 2, 3], generates the following matrix:
+
+        [[1 2 3]
+         [2 3 1]
+         [3 1 2]]
+    """
+    c = numpy.asarray(c).ravel()
+    a, b = numpy.ogrid[0 : len(c), 0 : -len(c) : -1]
+    indx = a + b
+    return c[indx]
+
+
+def negacyclic_polymul_toeplitz(p1, p2):
+    """Computes a poly multiplication mod (X^N + 1) where N = len(p1).
+
+    Uses the Toeplitz matrix representation of p1 to convert the problem into a
+    vector-matrix product.
+    """
+    n = len(p1)
+
+    # Generates a sign matrix with 1s above the diagonal and -1 above.
+    up_tri = numpy.tril(numpy.ones((n, n), dtype=int), 0)
+    low_tri = numpy.triu(numpy.ones((n, n), dtype=int), 1) * -1
+    sign_matrix = up_tri + low_tri
+
+    cyclic_matrix = cylic_matrix(p1)
+    toeplitz_p1 = sign_matrix * cyclic_matrix
+    return numpy.matmul(toeplitz_p1, p2)
