@@ -54,7 +54,7 @@ def primitive_nth_root(n):
     return math.cos(2 * math.pi / n) + 1.0j * math.sin(2 * math.pi / n)
 
 
-def tangent_fft_negacyclic_polymul(p1, p2):
+def negacyclic_polymul_complex_twist(p1, p2):
     """Computes a poly multiplication mod (X^N + 1) where N = len(a).
 
     Uses the idea on page 332 (pdf page 8) of "Fast multiplication and its

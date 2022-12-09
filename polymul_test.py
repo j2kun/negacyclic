@@ -7,7 +7,7 @@ import numpy as np
 from polymul import cyclic_polymul
 from polymul import negacyclic_polymul_preimage_and_map_back
 from polymul import negacyclic_polymul_use_special_preimage
-from polymul import tangent_fft_negacyclic_polymul
+from polymul import negacyclic_polymul_complex_twist
 
 
 def _np_polymul_mod(poly1, poly2, poly_mod):
@@ -60,7 +60,7 @@ def test_cyclic_polymul(p1, p2):
 NEGACYCLIC_IMPLS = [
     negacyclic_polymul_preimage_and_map_back,
     negacyclic_polymul_use_special_preimage,
-    tangent_fft_negacyclic_polymul,
+    negacyclic_polymul_complex_twist,
 ]
 
 
