@@ -57,7 +57,9 @@ def primitive_nth_root(n):
 def tangent_fft_negacyclic_polymul(p1, p2):
     """Computes a poly multiplication mod (X^N + 1) where N = len(a).
 
-    Uses the Tangent FFT idea.
+    Uses the idea on page 332 (pdf page 8) of "Fast multiplication and its
+    applications" by Daniel Bernstein.
+    http://cr.yp.to/lineartime/multapps-20080515.pdf
     """
     n = p2.shape[0]
     primitive_root = primitive_nth_root(2 * n)
