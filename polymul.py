@@ -32,6 +32,32 @@ def negacyclic_polymul_preimage_and_map_back(p1, p2):
     return (rounded[: p1.shape[0]] - rounded[p1.shape[0] :]) // 4
 
 
+def wrapping_convolve(a, b):
+    """Implement a wrapping convolution using numpy.convolve.
+
+    Numpy doesn't have a wrapping option, so this requires repeating
+    the coefficients of at least one of the input arrays.
+
+    Also note that, because the "valid" mode computes a convolution only when the
+    windows fully overlap, the first and last values are the same and should
+    correspond to the very last value in the output. Hence the final slicing step.
+    """
+    conv_result = numpy.convolve(a, numpy.tile(b, 2), mode="valid")
+    return conv_result[1:]
+
+
+def negacyclic_polymul_preimage_and_map_back_conv(p1, p2):
+    """Multiply two polynomials modulo (x^N + 1).
+
+    Same as negacyclic_polymul_preimage_and_map_back,
+    but uses a convolution operation instead of an FFT.
+    """
+    p1_preprocessed = numpy.concatenate([p1, -p1])
+    p2_preprocessed = numpy.concatenate([p2, -p2])
+    product = wrapping_convolve(p1_preprocessed, p2_preprocessed)
+    return (product[: p1.shape[0]] - product[p1.shape[0] :]) // 4
+
+
 def negacyclic_polymul_use_special_preimage(p1, p2):
     """Multiply two polynomials modulo (x^N + 1).
 

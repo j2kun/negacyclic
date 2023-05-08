@@ -55,6 +55,7 @@ def test_cyclic_polymul(p1, p2):
 
 
 NEGACYCLIC_IMPLS = [
+    polymul.negacyclic_polymul_preimage_and_map_back_conv,
     polymul.negacyclic_polymul_preimage_and_map_back,
     polymul.negacyclic_polymul_use_special_preimage,
     polymul.negacyclic_polymul_complex_twist,
@@ -71,5 +72,11 @@ def test_negacyclic_polymul(p1, p2, impl):
     p1 = np.array(p1)
     p2 = np.array(p2)
     expected = _np_negacyclic_polymul(p1, p2)
+    if impl == polymul.negacyclic_polymul_preimage_and_map_back_conv:
+        print()
+        print(f"Multiplying {p1} with {p2}")
+        print(f"Expecting {expected}")
     actual = impl(p1, p2)
+    if impl == polymul.negacyclic_polymul_preimage_and_map_back_conv:
+        print(f"Actual {actual}")
     np.testing.assert_array_equal(expected, actual)
